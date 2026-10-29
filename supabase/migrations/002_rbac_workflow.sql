@@ -1,7 +1,13 @@
-create type public.app_role as enum ('normal_user', 'team_member', 'admin');
-create type public.application_status as enum ('Pending', 'Approved', 'Rejected', 'Withdrawn');
+do $$ begin
+  create type public.app_role as enum ('normal_user', 'team_member', 'admin');
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  create type public.application_status as enum ('Pending', 'Approved', 'Rejected', 'Withdrawn');
+exception when duplicate_object then null;
+end $$;
 
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   role public.app_role not null default 'normal_user',
   active boolean not null default true,
@@ -12,6 +18,7 @@ create table public.profiles (
 create or replace function public.create_profile_for_user()
 returns trigger language plpgsql security definer set search_path = public
 as $$ begin insert into public.profiles(id) values (new.id) on conflict do nothing; return new; end $$;
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute function public.create_profile_for_user();
 
 alter table public.reports add column if not exists reporter_id uuid references public.profiles(id);
@@ -22,7 +29,7 @@ alter table public.reports add column if not exists resolution_cloudinary_public
 alter table public.reports add column if not exists resolved_at timestamptz;
 alter table public.reports add column if not exists resolved_by uuid references public.profiles(id);
 
-create table public.team_member_applications (
+create table if not exists public.team_member_applications (
   id uuid primary key default gen_random_uuid(),
   applicant_id uuid not null references public.profiles(id) on delete cascade,
   statement text not null check (char_length(btrim(statement)) between 20 and 1000),
@@ -32,9 +39,9 @@ create table public.team_member_applications (
   created_at timestamptz not null default now(),
   reviewed_at timestamptz
 );
-create unique index one_pending_team_application on public.team_member_applications(applicant_id) where status = 'Pending';
+create unique index if not exists one_pending_team_application on public.team_member_applications(applicant_id) where status = 'Pending';
 
-create table public.report_status_history (
+create table if not exists public.report_status_history (
   id uuid primary key default gen_random_uuid(),
   report_id uuid not null references public.reports(id) on delete cascade,
   actor_id uuid references public.profiles(id),
@@ -44,7 +51,7 @@ create table public.report_status_history (
   created_at timestamptz not null default now()
 );
 
-create table public.admin_audit_log (
+create table if not exists public.admin_audit_log (
   id uuid primary key default gen_random_uuid(),
   actor_id uuid not null references public.profiles(id),
   action text not null check (char_length(btrim(action)) between 2 and 100),
@@ -63,18 +70,26 @@ create or replace function public.current_app_role()
 returns public.app_role language sql stable security definer set search_path = public
 as $$ select role from public.profiles where id = auth.uid() and active = true $$;
 
+drop policy if exists "Users can read own profile" on public.profiles;
 create policy "Users can read own profile" on public.profiles for select using (id = auth.uid() or public.current_app_role() = 'admin');
+drop policy if exists "Users can read own applications" on public.team_member_applications;
 create policy "Users can read own applications" on public.team_member_applications for select using (applicant_id = auth.uid() or public.current_app_role() = 'admin');
+drop policy if exists "Users can submit applications" on public.team_member_applications;
 create policy "Users can submit applications" on public.team_member_applications for insert with check (applicant_id = auth.uid() and public.current_app_role() = 'normal_user');
+drop policy if exists "Admins manage applications" on public.team_member_applications;
 create policy "Admins manage applications" on public.team_member_applications for update using (public.current_app_role() = 'admin') with check (public.current_app_role() = 'admin');
+drop policy if exists "Authorized users read status history" on public.report_status_history;
 create policy "Authorized users read status history" on public.report_status_history for select using (auth.uid() is not null);
+drop policy if exists "Admins read audit log" on public.admin_audit_log;
 create policy "Admins read audit log" on public.admin_audit_log for select using (public.current_app_role() = 'admin');
 
 drop policy if exists "Public can create reports" on public.reports;
+drop policy if exists "Authenticated users create reports" on public.reports;
 create policy "Authenticated users create reports" on public.reports for insert with check (auth.uid() is not null and reporter_id = auth.uid());
+drop policy if exists "Admins manage reports" on public.reports;
 create policy "Admins manage reports" on public.reports for update using (public.current_app_role() = 'admin') with check (public.current_app_role() = 'admin');
-create index reports_reporter_id_idx on public.reports(reporter_id);
-create index reports_assigned_to_idx on public.reports(assigned_to);
+create index if not exists reports_reporter_id_idx on public.reports(reporter_id);
+create index if not exists reports_assigned_to_idx on public.reports(assigned_to);
 
 create or replace function public.claim_report(target_report uuid)
 returns public.reports language plpgsql security definer set search_path = public
