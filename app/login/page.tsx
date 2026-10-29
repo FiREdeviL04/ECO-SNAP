@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -8,13 +9,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setBusy(true); setMessage("");
     try {
       const response = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: register ? "register" : "login", email, password }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message || "Authentication failed.");
-      setMessage(register && data.needsEmailConfirmation ? "Account created. Check your email before signing in." : "Signed in successfully.");
+      if (register && data.needsEmailConfirmation) {
+        setMessage("Account created. Check your email before signing in.");
+      } else {
+        setMessage("Signed in successfully.");
+        router.push("/dashboard");
+        router.refresh();
+      }
     } catch (error) { setMessage(error instanceof Error ? error.message : "Authentication failed."); }
     finally { setBusy(false); }
   }

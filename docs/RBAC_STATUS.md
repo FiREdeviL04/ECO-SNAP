@@ -19,6 +19,8 @@
 4. Set `ECOSNAP_RBAC_ENABLED=true` in the Vercel Production environment.
 5. Redeploy and run authenticated API/RLS tests with those identities.
 
+The production rollout flag was added on 30 October 2026 after the Supabase SQL editor reported that the RBAC type already existed. Confirm the full migration completed successfully before relying on privileged workflows. Sign out and sign in again after deployment so the browser receives a fresh session cookie.
+
 ## Not yet claimed
 
 The migration and authentication foundation are not evidence of a complete RBAC product. Resolution upload UI, full report administration, audit views, and live RLS tests require the migration, trusted admin bootstrap, and test identities. They remain deferred until those gates are exercised.
