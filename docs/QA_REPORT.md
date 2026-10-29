@@ -1,6 +1,6 @@
 # QA report — 30 October 2026
 
-Tested application commit: record after release commit  
+Tested application commit: `27dade6`  
 Deployment: `https://ecosnap-hacktober-hackdays.vercel.app`
 
 | Check | Result | Evidence |
