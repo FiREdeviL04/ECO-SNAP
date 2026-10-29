@@ -1,6 +1,6 @@
 # QA report — 30 October 2026
 
-Tested application commit: `bba0bcf`  
+Tested application commit: pending final dashboard release  
 Deployment: `https://ecosnap-hacktober-hackdays.vercel.app`
 
 | Check | Result | Evidence |
@@ -22,6 +22,7 @@ Deployment: `https://ecosnap-hacktober-hackdays.vercel.app`
 | Deployed auth session smoke | Pass | `POST /api/auth` with `{ "action": "me" }` returned `{"authenticated":false}` with HTTP 200 on the production URL |
 | Protected workflow API build | Pass locally; live authorization not run | Team application, claim, resolve, and admin review routes compile and validate server-side roles; live calls require migration activation and test identities |
 | Deployed role surfaces | Pass | `/login`, `/team-member`, `/team`, and `/admin` returned HTTP 200; unauthenticated `/api/team-applications` returned HTTP 401 |
+| User dashboard scope | Pass locally; live RBAC gate pending | `/dashboard` uses `/api/reports?scope=mine`, which requires a trusted authenticated profile when RBAC is enabled |
 | Accessibility/device automation | Not run | Manual 360 px, keyboard, screen-reader, and contrast review remains recommended |
 
 Known limitations: status management, resolution evidence, maps, and AI labels remain intentionally deferred. The public database still contains two diagnostic records from integration troubleshooting; remove them before a judging demo if they should not be shown.

@@ -28,7 +28,7 @@ The reports screen provides server-backed search across title, description, and 
 
 The repository includes a Supabase Auth and trusted-role foundation plus migration `supabase/migrations/002_rbac_workflow.sql`. Apply that migration and set `ECOSNAP_RBAC_ENABLED=true` only after creating the initial administrator through a controlled database operation. The default is `false` to preserve the currently verified report flow until the live schema and test identities are verified. See [docs/RBAC_STATUS.md](./docs/RBAC_STATUS.md) for the activation and verification gates.
 
-The current protected surfaces are `/login`, `/team-member`, `/team`, and `/admin`. They call role-checked APIs, but resolution upload UI, full report administration, and live authorization verification remain pending the migration activation gate.
+The current role-aware surfaces are `/login`, `/dashboard`, `/team-member`, `/team`, and `/admin`. See [the route/permission matrix](./docs/ROUTE_PERMISSION_MATRIX.md). They call role-checked APIs, but resolution upload UI, full report administration, and live authorization verification remain pending the migration activation gate.
 
 The current delivered platform is an installable mobile-first PWA, not a native Android/iOS application. On a phone browser, use “Add to Home Screen”. Demo mode supports local image data and browser-only reports; persistent mode uses real Cloudinary and Supabase.
 

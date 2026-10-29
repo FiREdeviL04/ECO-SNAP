@@ -32,6 +32,11 @@ export async function GET(req: Request) {
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/rest\/v1\/?$/, "");
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const searchParams = new URL(req.url).searchParams;
+  const scope = searchParams.get("scope");
+  const user = scope ? await getAuthUser() : null;
+  const rbacEnabled = process.env.ECOSNAP_RBAC_ENABLED === "true";
+  if (scope === "mine" && (!rbacEnabled || !user)) return errorResponse(user ? "FORBIDDEN" : "AUTHENTICATION_REQUIRED", "Your dashboard requires an authenticated account.", user ? 403 : 401);
+  if (scope === "team" && (!rbacEnabled || !user || !["team_member", "admin"].includes(user.role))) return errorResponse(user ? "FORBIDDEN" : "AUTHENTICATION_REQUIRED", "Team-member access is required.", user ? 403 : 401);
   const id = searchParams.get("id");
   const search = searchParams.get("search")?.trim().slice(0, 100);
   const category = searchParams.get("category");
@@ -41,6 +46,8 @@ export async function GET(req: Request) {
   const pageSize = Math.max(1, Math.min(50, Number(searchParams.get("pageSize") || 20) || 20));
   const filters = [
     id ? `id=eq.${encodeURIComponent(id)}` : "",
+    scope === "mine" ? `reporter_id=eq.${encodeURIComponent(user!.id)}` : "",
+    scope === "team" ? `or=(status.eq.Open,assigned_to.eq.${encodeURIComponent(user!.id)})` : "",
     search ? `or=(title.ilike.*${encodeURIComponent(search)}*,description.ilike.*${encodeURIComponent(search)}*,location.ilike.*${encodeURIComponent(search)}*)` : "",
     category ? `category=eq.${encodeURIComponent(category)}` : "",
     status ? `status=eq.${encodeURIComponent(status)}` : "",

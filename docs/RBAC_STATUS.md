@@ -9,6 +9,7 @@
 - Versioned migration `supabase/migrations/002_rbac_workflow.sql` containing profiles, application status, assignment fields, resolution evidence fields, status history, audit log, constraints, indexes, and RLS policies.
 - Explicit rollout flag `ECOSNAP_RBAC_ENABLED`. It defaults to `false` so an unapplied migration cannot break the existing report flow.
 - Protected workflow API contracts for team applications, atomic report claiming, evidence-backed resolution, and administrator application review.
+- Distinct dashboard surfaces for normal users (`/dashboard`), team members (`/team`), and administrators (`/admin`), with a documented [route/permission matrix](./ROUTE_PERMISSION_MATRIX.md).
 
 ## Activation runbook
 
@@ -20,4 +21,4 @@
 
 ## Not yet claimed
 
-The migration and authentication foundation are not evidence of a complete RBAC product. Resolution upload UI, admin dashboard, approval views, audit views, and live RLS tests require the migration, trusted admin bootstrap, and test identities. They remain deferred until those gates are exercised.
+The migration and authentication foundation are not evidence of a complete RBAC product. Resolution upload UI, full report administration, audit views, and live RLS tests require the migration, trusted admin bootstrap, and test identities. They remain deferred until those gates are exercised.
