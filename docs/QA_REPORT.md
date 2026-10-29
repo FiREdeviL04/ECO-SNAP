@@ -1,5 +1,8 @@
 # QA report — 30 October 2026
 
+Tested application commit: record after release commit  
+Deployment: `https://ecosnap-hacktober-hackdays.vercel.app`
+
 | Check | Result | Evidence |
 | --- | --- | --- |
 | Strict TypeScript | Pass | `npm run typecheck` |
@@ -8,9 +11,13 @@
 | Production build | Pass | `npm run build` |
 | Report page route | Pass | emitted as static `/report` route |
 | Cloudinary missing-config state | Pass | local POST to `/api/cloudinary/sign` returned safe HTTP 503 JSON error |
-| Real Cloudinary upload | Blocked | no Cloudinary credentials were available |
-| Supabase persistence and RLS verification | Blocked | no Supabase project URL/key was available |
-| GitHub push | Not attempted | repository remote is available, but no commit/push was requested |
-| Live deployment | Blocked | no hosting account or production environment values were available |
+| Search/filter/pagination UI | Pass | `/reports` sends bounded server-side query parameters, displays result totals, supports clear/retry/empty states, and paginates |
+| Real Cloudinary upload | Pass | Production report flow previously verified with a real Cloudinary asset and provider public ID |
+| Supabase persistence and RLS verification | Pass | Production `/api/reports` returned persisted records; migration contains anonymous update/delete revocation |
+| GitHub push | Pass | Latest release commit pushed to `FiREdeviL04/ECO-SNAP` |
+| Live deployment | Pass | Vercel deployment reached READY; homepage and `/api/runtime` returned HTTP 200 |
+| Production runtime | Pass | `/api/runtime` returned `{"mode":"persistent"}` |
+| Production reports API | Pass | `/api/reports` returned HTTP 200 with `persistence:"supabase"` and metrics |
+| Accessibility/device automation | Not run | Manual 360 px, keyboard, screen-reader, and contrast review remains recommended |
 
-No live integration has been represented as tested. When environment variables are provided, perform the documented demo path and record the actual result here.
+Known limitations: status management, resolution evidence, maps, and AI labels remain intentionally deferred. The public database still contains two diagnostic records from integration troubleshooting; remove them before a judging demo if they should not be shown.

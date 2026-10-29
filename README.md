@@ -20,7 +20,9 @@ The browser-demo mode is explicit: set `NEXT_PUBLIC_DEMO_MODE=true` for a local-
 
 ## Verification
 
-Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. Local checks pass in the current remediation baseline. Real Cloudinary, Supabase, and deployed smoke tests remain blocked until credentials and a deployment are supplied.
+Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. The current release passes typecheck, tests, and production build; lint passes with existing non-blocking image/config warnings. The deployed production URL is `https://ecosnap-hacktober-hackdays.vercel.app`. Its runtime reports persistent mode and its reports API is Supabase-backed.
+
+The reports screen provides server-backed search across title, description, and location, category/status/priority filters, clear recovery, result totals, and bounded pagination. Admin status changes, resolution evidence, maps, and AI labels are intentionally deferred rather than simulated.
 
 The current delivered platform is an installable mobile-first PWA, not a native Android/iOS application. On a phone browser, use “Add to Home Screen”. Demo mode supports local image data and browser-only reports; persistent mode uses real Cloudinary and Supabase.
 

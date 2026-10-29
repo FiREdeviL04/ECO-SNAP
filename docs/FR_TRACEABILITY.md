@@ -14,10 +14,10 @@
 | FR-06 | Detail/404; `app/reports/[id]/page.tsx` | Separate loading, error and confirmed not-found; safe reference/date; raw provider ID removed from prominent UI. | IMPLEMENTED LOCALLY |
 | FR-07 | Honest demo fallback; `lib/runtime.ts`, `components/runtime-banner.tsx`, `app/api/runtime/route.ts` | Persistent, explicit demo, and misconfigured modes; persistent banner/error indicator across routes; no silent fallback. | IMPLEMENTED LOCALLY |
 | FR-08 | Real metrics; `app/api/reports/route.ts`, `app/page.tsx` | Counts are queried from persisted records and show unavailable state when storage is not configured. Fixture/live transition verification requires Supabase. | IMPLEMENTED LOCALLY; LIVE TEST BLOCKED |
-| FR-09 | Search/filter/pagination; `app/api/reports/route.ts` | Server-capped search, category/status/severity filters, deterministic range pagination and total response. UI controls and boundary tests remain to be added. | PARTIAL / P1 DEFERRED |
+| FR-09 | Search/filter/pagination; `app/api/reports/route.ts`, `app/reports/page.tsx` | Server-capped search, category/status/severity filters, deterministic range pagination, total response, URL-derived request state, clear controls, zero-result recovery, loading/error/retry states, and mobile controls. | IMPLEMENTED; live boundary/device verification recorded in QA |
 | FR-10 | Admin status updates | No auth/admin implementation exists. | DEFERRED P2 — requires Supabase Auth, trusted admin role, and status history design |
 | FR-11 | Before/after evidence | Only original evidence and resolution note exist. | DEFERRED P2 — requires status lifecycle and separate resolution asset contract |
 | FR-12 | AI-assisted labels | No AI service is configured. | DEFERRED P2 — optional and must not fabricate suggestions |
 | FR-13 | Map and duplicate grouping | No geolocation or grouping contract exists. | DEFERRED P2 — requires privacy, consent, stable location data, and representative tests |
 
-Live Cloudinary, Supabase, deployed, and device checks are explicitly blocked until authorized environment configuration is available.
+Cloudinary, Supabase, and deployed integration checks were completed against the configured production deployment on 30 October 2026. Device/emulator and accessibility automation remain manual verification items. FR-10–FR-13 remain intentionally deferred because no approved authentication, resolution-asset, mapping, or AI provider contract was supplied.

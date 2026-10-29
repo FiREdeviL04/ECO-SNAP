@@ -19,6 +19,7 @@
 - Baseline audit and FR traceability records.
 - Persisted-report metrics for Open, In Progress, and Resolved statuses.
 - Server-capped search/filter parameters and deterministic page ranges for report listing.
+- Mobile report-discovery controls for search, category/status/severity filters, clear recovery, result counts, and pagination.
 - ISO 27001-style readiness evidence and open-control register.
 - Installable PWA metadata and a fully runnable explicit demo submission path using local data URLs; persistent mode continues to require Cloudinary.
 
@@ -34,12 +35,18 @@ Passed locally:
 - Local smoke test: Cloudinary sign endpoint returned `503 CONFIGURATION_ERROR` without credentials.
 - Local smoke test: malformed report JSON returned `400 INVALID_JSON`.
 
-## Blocked gates
+## Verified live gates
 
-- Real Cloudinary upload and provider metadata verification: credentials unavailable.
-- Real Supabase migration, persistence, fresh-client reload, RLS anonymous update/delete denial: project URL/key unavailable.
+- Production Vercel deployment is READY at `https://ecosnap-hacktober-hackdays.vercel.app`.
+- Production runtime reports `persistent`.
+- Production reports API returns Supabase-backed records and metrics.
+- Cloudinary-backed report creation was verified before deployment configuration was finalized.
+
+## Remaining gates and limitations
+
 - Device/emulator, accessibility automation, deployed smoke test, and production-origin verification: no device/deployment access supplied.
-- Exact FR-01–FR-13 mapping: authoritative specification PDF/DOCX unavailable.
 - Organizer logistics confirmation: written official confirmation was not supplied.
+- Admin status management and status history: deferred until an approved authentication and role model is supplied.
+- Resolution evidence, map discovery, and AI-assisted labels: deferred until their provider/data/privacy contracts are approved.
 
-These are intentionally marked **BLOCKED**, not passed.
+These are intentionally marked **DEFERRED** or **NOT RUN**, not passed. They are not represented as implemented in the UI or competition claims.
