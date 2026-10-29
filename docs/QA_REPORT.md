@@ -18,6 +18,7 @@ Deployment: `https://ecosnap-hacktober-hackdays.vercel.app`
 | Live deployment | Pass | Vercel deployment reached READY; homepage and `/api/runtime` returned HTTP 200 |
 | Production runtime | Pass | `/api/runtime` returned `{"mode":"persistent"}` |
 | Production reports API | Pass | `/api/reports` returned HTTP 200 with `persistence:"supabase"` and metrics |
+| Authentication/RBAC foundation | Pass locally; live activation not run | Auth route, HTTP-only session cookie handling, trusted role lookup, and migration compile/build; live Auth/RLS/admin identity tests require migration activation and controlled test accounts |
 | Accessibility/device automation | Not run | Manual 360 px, keyboard, screen-reader, and contrast review remains recommended |
 
 Known limitations: status management, resolution evidence, maps, and AI labels remain intentionally deferred. The public database still contains two diagnostic records from integration troubleshooting; remove them before a judging demo if they should not be shown.

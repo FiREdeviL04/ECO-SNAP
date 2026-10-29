@@ -24,6 +24,10 @@ Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. The cu
 
 The reports screen provides server-backed search across title, description, and location, category/status/priority filters, clear recovery, result totals, and bounded pagination. Admin status changes, resolution evidence, maps, and AI labels are intentionally deferred rather than simulated.
 
+## Authentication and RBAC rollout
+
+The repository includes a Supabase Auth and trusted-role foundation plus migration `supabase/migrations/002_rbac_workflow.sql`. Apply that migration and set `ECOSNAP_RBAC_ENABLED=true` only after creating the initial administrator through a controlled database operation. The default is `false` to preserve the currently verified report flow until the live schema and test identities are verified. See [docs/RBAC_STATUS.md](./docs/RBAC_STATUS.md) for the activation and verification gates.
+
 The current delivered platform is an installable mobile-first PWA, not a native Android/iOS application. On a phone browser, use “Add to Home Screen”. Demo mode supports local image data and browser-only reports; persistent mode uses real Cloudinary and Supabase.
 
 ## Cloudinary security

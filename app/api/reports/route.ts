@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { isCloudinaryAsset, reportSchema, type Report } from "@/lib/report";
 import { runtimeMode } from "@/lib/runtime";
 import { rateLimit } from "@/lib/rate-limit";
+import { getAccessToken, getAuthUser } from "@/lib/auth";
 
 const headers = { "Cache-Control": "no-store" };
 const errorResponse = (code: string, message: string, status: number) =>
@@ -81,6 +82,9 @@ export async function POST(req: Request) {
   const parsed = reportSchema.safeParse(body);
   if (!parsed.success) return errorResponse("VALIDATION_ERROR", parsed.error.issues[0]?.message || "Invalid report.", 400);
   const mode = runtimeMode();
+  const user = await getAuthUser();
+  const rbacEnabled = process.env.ECOSNAP_RBAC_ENABLED === "true";
+  if (mode === "persistent" && rbacEnabled && !user) return errorResponse("AUTHENTICATION_REQUIRED", "Sign in before creating a report.", 401);
   const isExplicitDemoAsset = mode === "demo" && parsed.data.imageUrl.startsWith("data:image/") && parsed.data.cloudinaryPublicId.startsWith("demo/");
   if (!isExplicitDemoAsset && !isCloudinaryAsset(parsed.data.imageUrl, parsed.data.cloudinaryPublicId)) {
     return errorResponse("INVALID_ASSET", "The image must be a verified EcoSnap Cloudinary asset.", 400);
@@ -92,11 +96,14 @@ export async function POST(req: Request) {
 
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/rest\/v1\/?$/, "");
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const accessToken = await getAccessToken();
+  const reportPayload: Record<string, unknown> = { id, title: row.title, description: row.description, category: row.category, location: row.location, severity: row.severity, image_url: row.imageUrl, cloudinary_public_id: row.cloudinaryPublicId };
+  if (rbacEnabled && user) reportPayload.reporter_id = user.id;
   try {
     const response = await fetch(`${baseUrl}/rest/v1/reports`, {
       method: "POST",
-      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", Prefer: "return=representation" },
-      body: JSON.stringify({ id, title: row.title, description: row.description, category: row.category, location: row.location, severity: row.severity, image_url: row.imageUrl, cloudinary_public_id: row.cloudinaryPublicId }),
+      headers: { apikey: key, Authorization: `Bearer ${accessToken || key}`, "Content-Type": "application/json", Prefer: "return=representation" },
+      body: JSON.stringify(reportPayload),
       cache: "no-store",
     });
     if (!response.ok) return errorResponse("UPSTREAM_FAILURE", "The report could not be saved. Try again.", 502);
